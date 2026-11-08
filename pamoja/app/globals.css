@@ -21,3 +21,50 @@ body{background:#f7f8f2;color:var(--v-ink);font-family:Inter,ui-sans-serif,syste
 @media(min-width:1024px){.landing-links{display:flex}.landing-hero{grid-template-columns:1.05fr .95fr;gap:45px}.landing-for-inner{grid-template-columns:1fr 1fr;align-items:center}}
 @media(max-width:480px){.landing-header .tour-launch{font-size:0;gap:0}.landing-header .tour-launch svg{width:19px;height:19px}.landing-header .landing-button-small{font-size:11px}.landing-preview{padding:14px}.landing-floating-note{right:-5px;bottom:28px}.landing-preview-row b{font-size:10px}.landing-hero h1{font-size:56px}.landing-use-cases span{font-size:11px}.vibe-topbar .tour-launch{font-size:0;gap:0;padding:8px}}
 @media(prefers-reduced-motion:reduce){.landing-v2 *, .tour-root *{scroll-behavior:auto!important;transition:none!important}}
+
+
+@media (min-width: 1024px) {
+  .vibe-sidebar { display:flex; width:260px; overflow-y:auto; overflow-x:hidden; scroll-behavior:smooth; scrollbar-gutter:stable; transition:width .25s cubic-bezier(.25,.46,.45,.94); }
+  .vibe-sidebar.is-collapsed { width:92px; padding-inline:12px; }
+  .vibe-sidebar.is-collapsed .vibe-brand-text,
+  .vibe-sidebar.is-collapsed .vibe-caption,
+  .vibe-sidebar.is-collapsed .vibe-nav-label,
+  .vibe-sidebar.is-collapsed .vibe-sidebar-bottom > p,
+  .vibe-sidebar.is-collapsed .vibe-new-group span { display:none; }
+  .vibe-sidebar.is-collapsed .vibe-brand { justify-content:center; }
+  .vibe-sidebar.is-collapsed .vibe-brand-mark { margin-right:0; }
+  .vibe-sidebar.is-collapsed .vibe-nav { justify-content:center; padding-inline:10px; }
+  .vibe-sidebar.is-collapsed .vibe-nav .ml-auto { display:none; }
+  .vibe-sidebar.is-collapsed .vibe-sticker { font-size:16px; padding:16px 10px; }
+  .vibe-sidebar.is-collapsed .vibe-new-group { justify-content:center; }
+  .vibe-sidebar-header { display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:4px; }
+  .vibe-sidebar-toggle { display:inline-flex; align-items:center; justify-content:center; width:32px; height:32px; border:2px solid #172c27; border-radius:10px; background:#fff; font-weight:900; box-shadow:3px 3px 0 #172c27; transition:all .2s ease; }
+  .vibe-sidebar-toggle:hover { transform:translate(-2px,-2px); box-shadow:4px 4px 0 #172c27; }
+  .vibe-sidebar-toggle:active { transform:translate(2px,2px); box-shadow:none; }
+}
+
+@media (max-width: 1023px) {
+  .vibe-sidebar { display:none; }
+}
+
+body.dark .vibe-sidebar { background:#0f1d1a; border-color:#27473d; }
+body.dark .vibe-brand, body.dark .vibe-nav, body.dark .vibe-top-label, body.dark .vibe-sidebar-bottom > p, body.dark .vibe-caption, body.dark .vibe-new-group { color:#e6f4eb; }
+body.dark .vibe-nav:hover, body.dark .vibe-nav.is-active { background:#16352d; border-color:#2d6d5f; box-shadow:3px 3px 0 #77cf9f; }
+body.dark .vibe-sticker { background:#a7f0c6; color:#0e1f1a; border-color:#d9f4e2; box-shadow:5px 5px 0 #16372b; }
+body.dark .vibe-topbar { background:#0d201b; border-color:#27473d; }
+body.dark .vibe-icon-btn { color:#e6f4eb; }
+body.dark .vibe-icon-btn:hover { background:#16352d; box-shadow:3px 3px 0 #77cf9f; }
+body.dark .vibe-mobile-nav { background:#0f1d1a; border-bottom-color:#2d5d51; }
+body.dark .vibe-brand-mark { background:#d9f4e2; border-color:#d9f4e2; color:#05352d; box-shadow:3px 3px 0 #7ee0b2; }
+body.dark .vibe-avatar { background:#a7f0c6; color:#0d211b; border-color:#0d211b; }
+body.dark .vibe-live-dot { box-shadow:0 0 0 4px rgba(121, 236, 176, 0.25); }
+.vibe-sidebar { scrollbar-width:thin; scrollbar-color:#9ab5a7 transparent; }
+.vibe-nav { width:100%; }
+.vibe-nav.is-collapsed { justify-content:center; }
+.vibe-navigation { display:grid; gap:7px; overflow-y:auto; overflow-x:hidden; min-height:0; }
+.vibe-brand { display:flex; align-items:center; gap:10px; min-width:0; }
+.vibe-brand-text { white-space:nowrap; }
+.vibe-sidebar-bottom { display:flex; flex-direction:column; gap:12px; margin-top:auto; }
+.vibe-new-group { display:flex; align-items:center; gap:8px; font-size:13px; font-weight:850; }
+.skip-link { position:absolute; left:-9999px; top:auto; }
+.skip-link:focus { left:16px; top:16px; background:#fff; border:2px solid #172c27; border-radius:12px; padding:8px 12px; z-index:60; }

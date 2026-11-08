@@ -1,5 +1,140 @@
-'use client';import {FormEvent,useState} from 'react';import Link from 'next/link';import {useRouter,useSearchParams} from 'next/navigation';import {toast} from 'sonner';import {supabase,configured} from '@/lib/supabase';import Logo from './logo';import {ArrowRight,Eye,EyeOff} from 'lucide-react';
-export default function AuthForm({register=false}:{register?:boolean}){const router=useRouter(),search=useSearchParams(),[email,setEmail]=useState(''),[password,setPassword]=useState(''),[name,setName]=useState(''),[busy,setBusy]=useState(false),[show,setShow]=useState(false);const next=search.get('next')||'/dashboard';
-async function submit(e:FormEvent){e.preventDefault();setBusy(true);try{const db=supabase();if(register){const {error}=await db.auth.signUp({email,password,options:{data:{full_name:name},emailRedirectTo:window.location.origin+'/dashboard'}});if(error)throw error;toast.success('Account created! Check your email if confirmation is enabled.');router.push('/login?next='+encodeURIComponent(next))}else{const {error}=await db.auth.signInWithPassword({email,password});if(error)throw error;router.push(next);router.refresh()}}catch(e){toast.error(e instanceof Error?e.message:'Something went wrong')}finally{setBusy(false)}}
-async function google(){try{const {error}=await supabase().auth.signInWithOAuth({provider:'google',options:{redirectTo:window.location.origin+next}});if(error)throw error}catch(e){toast.error(e instanceof Error?e.message:'Google sign-in failed')}}
-return <div className="grid min-h-screen lg:grid-cols-2"><div className="flex flex-col p-7 md:p-12"><Logo/><div className="mx-auto flex w-full max-w-md flex-1 flex-col justify-center py-16"><p className="mb-3 text-sm font-bold uppercase tracking-widest text-emerald-700">{register?'Join the good company':'Welcome back'}</p><h1 className="text-4xl font-black tracking-tight">{register?'Better together starts here.':'Good to have you back.'}</h1><p className="mt-3 text-muted">{register?'Create your free account and make group expenses a breeze.':'Log in to see where everyone stands.'}</p>{!configured&&<div className="mt-5 rounded-xl bg-amber-100 p-4 text-sm text-amber-900">Supabase is not configured. Copy .env.example to .env.local and add your project keys.</div>}<form onSubmit={submit} className="mt-8 space-y-5">{register&&<div><label className="label" htmlFor="name">Your name</label><input id="name" className="field" value={name} onChange={e=>setName(e.target.value)} required placeholder="e.g. Amina Otieno"/></div>}<div><label className="label" htmlFor="email">Email address</label><input id="email" type="email" className="field" required value={email} onChange={e=>setEmail(e.target.value)} placeholder="you@example.com"/></div><div><label className="label" htmlFor="password">Password</label><div className="relative"><input id="password" type={show?'text':'password'} className="field pr-12" minLength={6} required value={password} onChange={e=>setPassword(e.target.value)} placeholder="At least 6 characters"/><button type="button" onClick={()=>setShow(!show)} className="absolute right-4 top-3.5 text-muted" aria-label="Show or hide password">{show?<EyeOff size={19}/>:<Eye size={19}/>}</button></div></div><button disabled={busy||!configured} className="btn-primary w-full">{busy?'Please wait…':register?'Create account':'Log in'} <ArrowRight size={18}/></button></form><div className="my-6 flex items-center gap-3 text-xs text-muted"><div className="h-px flex-1 bg-gray-200"/>OR<div className="h-px flex-1 bg-gray-200"/></div><button disabled={!configured} onClick={google} className="btn-outline w-full">Continue with Google</button><p className="mt-7 text-center text-sm text-muted">{register?'Already have an account?':'New to Pamoja?'} <Link className="font-bold text-pine underline" href={register?'/login':'/register'}>{register?'Log in':'Create an account'}</Link></p></div></div><div className="hidden flex-col justify-center bg-pine p-16 text-white lg:flex"><div className="max-w-md"><div className="mb-10 text-7xl">🌴</div><h2 className="text-5xl font-black leading-tight">More memories.<br/>Less money math.</h2><p className="mt-6 text-lg text-emerald-100">Trips, rent, groceries, celebrations — all the good stuff, without the awkward follow-ups.</p><div className="mt-10 rounded-3xl bg-white/10 p-6"><p className="text-sm text-emerald-100">Your friends will thank you.</p><div className="mt-3 text-2xl font-black">Split fairly. Settle simply.</div></div></div></div></div>}
+'use client';
+import {FormEvent, useState} from 'react';
+import Link from 'next/link';
+import {useRouter, useSearchParams} from 'next/navigation';
+import {toast} from 'sonner';
+import {supabase, configured} from '@/lib/supabase';
+import Logo from './logo';
+import {ArrowRight, Eye, EyeOff} from 'lucide-react';
+
+const passwordRules = [
+  {label: 'At least 12 characters', test: (value: string) => value.length >= 12},
+  {label: 'One uppercase letter', test: (value: string) => /[A-Z]/.test(value)},
+  {label: 'One lowercase letter', test: (value: string) => /[a-z]/.test(value)},
+  {label: 'One number', test: (value: string) => /\d/.test(value)},
+  {label: 'One symbol', test: (value: string) => /[^A-Za-z0-9]/.test(value)},
+] as const;
+
+function getPasswordIssues(password: string) {
+  return passwordRules.filter((rule) => !rule.test(password));
+}
+
+export default function AuthForm({register = false}:{register?: boolean}) {
+  const router = useRouter();
+  const search = useSearchParams();
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [name, setName] = useState('');
+  const [busy, setBusy] = useState(false);
+  const [show, setShow] = useState(false);
+  const next = search.get('next') || '/dashboard';
+
+  async function submit(e: FormEvent) {
+    e.preventDefault();
+    const normalizedEmail = email.trim().toLowerCase();
+
+    if (register) {
+      const issues = getPasswordIssues(password);
+      if (issues.length) {
+        toast.error('Password must include: ' + issues.map((rule) => rule.label.toLowerCase()).join(', '));
+        return;
+      }
+    }
+
+    setBusy(true);
+    try {
+      const db = supabase();
+      if (register) {
+        const {error} = await db.auth.signUp({
+          email: normalizedEmail,
+          password,
+          options: {data: {full_name: name.trim()}, emailRedirectTo: window.location.origin + '/dashboard'},
+        });
+        if (error) {
+          const message = error.message.toLowerCase();
+          if (message.includes('already') || message.includes('exists') || message.includes('registered')) {
+            toast.error('An account with this email already exists. Try logging in or resetting your password.');
+            return;
+          }
+          throw error;
+        }
+        toast.success('Account created! Check your email if confirmation is enabled.');
+        router.push('/login?next=' + encodeURIComponent(next));
+      } else {
+        const {error} = await db.auth.signInWithPassword({email: normalizedEmail, password});
+        if (error) throw error;
+        router.push(next);
+        router.refresh();
+      }
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : 'Something went wrong');
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function google() {
+    try {
+      const {error} = await supabase().auth.signInWithOAuth({provider: 'google', options: {redirectTo: window.location.origin + next}});
+      if (error) throw error;
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : 'Google sign-in failed');
+    }
+  }
+
+  return (
+    <div className="grid min-h-screen lg:grid-cols-2">
+      <div className="flex flex-col p-7 md:p-12">
+        <Logo />
+        <div className="mx-auto flex w-full max-w-md flex-1 flex-col justify-center py-16">
+          <p className="mb-3 text-sm font-bold uppercase tracking-widest text-emerald-700">{register ? 'Join the good company' : 'Welcome back'}</p>
+          <h1 className="text-4xl font-black tracking-tight">{register ? 'Better together starts here.' : 'Good to have you back.'}</h1>
+          <p className="mt-3 text-muted">{register ? 'Create your free account and make group expenses a breeze.' : 'Log in to see where everyone stands.'}</p>
+          {!configured && <div className="mt-5 rounded-xl bg-amber-100 p-4 text-sm text-amber-900">Supabase is not configured. Copy .env.example to .env.local and add your project keys.</div>}
+          <form onSubmit={submit} className="mt-8 space-y-5">
+            {register && <div><label className="label" htmlFor="name">Your name</label><input id="name" className="field" value={name} onChange={(e) => setName(e.target.value)} required placeholder="e.g. Amina Otieno" /></div>}
+            <div>
+              <label className="label" htmlFor="email">Email address</label>
+              <input id="email" type="email" className="field" required value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@example.com" />
+            </div>
+            <div>
+              <label className="label" htmlFor="password">Password</label>
+              <div className="relative">
+                <input id="password" type={show ? 'text' : 'password'} className="field pr-12" minLength={12} required value={password} onChange={(e) => setPassword(e.target.value)} placeholder="At least 12 characters" />
+                <button type="button" onClick={() => setShow(!show)} className="absolute right-4 top-3.5 text-muted" aria-label="Show or hide password">{show ? <EyeOff size={19} /> : <Eye size={19} />}</button>
+              </div>
+              {register && password.length > 0 && (
+                <ul className="mt-3 space-y-1 text-sm" aria-live="polite">
+                  {passwordRules.map((rule) => {
+                    const met = rule.test(password);
+                    return (
+                      <li key={rule.label} className={met ? 'text-emerald-700' : 'text-muted'}>
+                        <span aria-hidden="true">{met ? '✓' : '•'}</span> {rule.label}
+                      </li>
+                    );
+                  })}
+                </ul>
+              )}
+            </div>
+            <button disabled={busy || !configured} className="btn-primary w-full">{busy ? 'Please wait…' : register ? 'Create account' : 'Log in'} <ArrowRight size={18} /></button>
+          </form>
+          <div className="my-6 flex items-center gap-3 text-xs text-muted"><div className="h-px flex-1 bg-gray-200" />OR<div className="h-px flex-1 bg-gray-200" /></div>
+          <button disabled={!configured} onClick={google} className="btn-outline w-full">Continue with Google</button>
+          <p className="mt-7 text-center text-sm text-muted">{register ? 'Already have an account?' : 'New to Pamoja?'} <Link className="font-bold text-pine underline" href={register ? '/login' : '/register'}>{register ? 'Log in' : 'Create an account'}</Link></p>
+        </div>
+      </div>
+      <div className="hidden flex-col justify-center bg-pine p-16 text-white lg:flex">
+        <div className="max-w-md">
+          <div className="mb-10 text-7xl">🌴</div>
+          <h2 className="text-5xl font-black leading-tight">More memories.<br />Less money math.</h2>
+          <p className="mt-6 text-lg text-emerald-100">Trips, rent, groceries, celebrations — all the good stuff, without the awkward follow-ups.</p>
+          <div className="mt-10 rounded-3xl bg-white/10 p-6">
+            <p className="text-sm text-emerald-100">Your friends will thank you.</p>
+            <div className="mt-3 text-2xl font-black">Split fairly. Settle simply.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
