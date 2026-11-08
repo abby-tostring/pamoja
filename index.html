@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0b0b0c">
+  <meta name="description" content="Pamoja — split the bill, keep the vibes. A playful expense-sharing dashboard.">
+  <title>Pamoja — Split the bill. Keep the vibes.</title>
+  <link rel="stylesheet" href="./styles.css">
+  <script type="module" src="./script.js"></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <div class="app-shell">
+    <aside class="sidebar" aria-label="Main navigation">
+      <a class="brand" href="#dashboard" aria-label="Pamoja home"><span class="brand-mark">✳</span> pamoja<span class="brand-dot">.</span></a>
+      <div class="sidebar-caption">YOUR MONEY, BUT SOCIAL</div>
+      <nav class="navigation" aria-label="Primary">
+        <button class="nav-link is-active" data-view="dashboard" aria-current="page"><span aria-hidden="true">◫</span> Overview <span class="nav-arrow">↗</span></button>
+        <button class="nav-link" data-view="feed"><span aria-hidden="true">☷</span> Vibe feed <span class="nav-arrow">↗</span></button>
+        <button class="nav-link" data-view="groups"><span aria-hidden="true">♧</span> Your groups <span class="nav-arrow">↗</span></button>
+        <button class="nav-link" data-view="insights"><span aria-hidden="true">◉</span> Insights <span class="nav-arrow">↗</span></button>
+      </nav>
+      <div class="sidebar-bottom"><div class="mini-sticker">NO MORE<br>“I'LL SEND<br>IT LATER” <span>✷</span></div><p>Demo mode · saved on this device</p><button class="text-button" id="resetDemo">↺ Reset demo data</button></div>
+    </aside>
+    <div class="main-wrap">
+      <header class="topbar"><div class="topbar-left"><span class="live-dot"></span><span>THE GROUP CHAT, BUT FOR MONEY</span></div><div class="topbar-actions"><span class="pill small">🇰🇪 KES</span><button class="avatar-button" id="profileButton" aria-label="Show demo profile">AG</button></div></header>
+      <main id="main" tabindex="-1">
+        <section class="intro"><div><p class="eyebrow">SUNDAY, <span id="todayLabel"></span> <span class="sparkle">✦</span></p><h1>Money talks.<br><em>We translate.</em></h1><p class="intro-sub">Less spreadsheet energy. More main character energy.</p></div><button class="primary-btn" id="addExpenseButton"><span aria-hidden="true">＋</span> Add expense <span aria-hidden="true">↗</span></button></section>
+        <div class="view-banner" id="viewBanner" hidden></div>
+        <section class="bento-grid" aria-label="Your expense dashboard">
+          <article class="tile balance-tile"><div class="tile-heading"><span class="tile-label">YOUR NET BALANCE</span><span class="tile-icon">↗</span></div><p class="balance-amount" id="netBalance">KES 0</p><p class="balance-caption" id="balanceCaption">All caught up</p><div class="balance-bottom"><span class="tiny-avatar-stack" aria-hidden="true"><i>JM</i><i>SK</i><i>TN</i></span><span>It's giving financial clarity ✨</span></div></article>
+          <article class="tile streak-tile"><div class="tile-heading"><span class="tile-label">SAVINGS STREAK</span><span class="tile-icon">🔥</span></div><div class="streak-number"><strong id="streakDays">7</strong><span>DAYS</span></div><p>Small wins count. Keep it going.</p><div class="streak-controls"><button class="small-dark-btn" id="checkInButton">＋ Daily check-in</button><span id="checkInStatus" role="status"></span></div></article>
+          <article class="tile health-tile" id="healthTile"><div class="tile-heading"><span class="tile-label">BUDGET VIBE CHECK</span><span class="tile-icon">✳</span></div><div class="health-main"><span id="healthEmoji" class="health-emoji" aria-hidden="true">🤠</span><div><strong id="healthTitle">You're chillin'</strong><p id="healthDescription">Your wallet is vibing.</p></div></div><div class="progress-track" role="progressbar" id="budgetProgress" aria-label="Budget used" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><div id="budgetFill"></div></div><div class="budget-footer"><span id="budgetSpent">KES 0 spent</span><span id="budgetLimit">of KES 15,000</span></div><button class="subtle-action" id="budgetButton">Adjust budget ↗</button></article>
+          <article class="tile group-tile"><div class="tile-heading"><span class="tile-label">YOUR SQUAD</span><span class="tile-icon">☺</span></div><div class="group-visual"><span class="group-emoji">🏖️</span><span class="group-label">THE DIANI CREW</span></div><p>4 friends · 1 shared wallet headache solved.</p><button class="outlined-btn" id="groupButton">Meet the crew <span>↗</span></button></article>
+          <section class="tile feed-tile" id="feedSection" aria-labelledby="feedHeading"><div class="section-heading"><div><p class="tile-label">THE SOCIAL LEDGER</p><h2 id="feedHeading">Split with <span>vibes.</span> <span class="heading-star">✳</span></h2></div><button class="outlined-btn compact" id="feedAddButton">＋ New drop</button></div><p class="section-sub">Every receipt has a story. And a person who still owes you.</p><div class="feed-list" id="expenseFeed" aria-live="polite"></div><div class="feed-empty" id="feedEmpty" hidden>No expenses yet. Be the first to drop a receipt. ✨</div></section>
+          <article class="tile split-tile" id="splitTile"><div class="tile-heading"><span class="tile-label">THE SPLIT LAB™</span><span class="tile-icon">⚗</span></div><h2>Choose your<br><span>chaos level.</span></h2><p class="split-description">Pick a split style. Watch the math do its thing.</p><div class="split-modes" role="group" aria-label="Split mode"><button class="mode-btn is-selected" data-mode="equal" aria-pressed="true">Equally</button><button class="mode-btn" data-mode="percent" aria-pressed="false">By %</button><button class="mode-btn" data-mode="leech" aria-pressed="false">🪱 Leech Ratio</button></div><label class="field-label" for="splitAmount">TOTAL TO SPLIT · KES</label><input class="amount-input" id="splitAmount" type="number" min="0" step="0.01" value="4000" inputmode="decimal"><div id="splitInputs" class="split-inputs"></div><div id="splitResults" class="split-results" aria-live="polite"></div><button class="primary-btn full" id="useSplitButton">Use this split on a new expense ↗</button></article>
+          <article class="tile insight-tile"><div class="tile-heading"><span class="tile-label">THE RECEIPTS DON'T LIE</span><span class="tile-icon">◈</span></div><h2>Where'd it <em>go?</em></h2><div id="categoryChart" class="category-chart" aria-label="Spending by category"></div><p class="insight-note">Based on expenses you personally paid in this demo.</p></article>
+          <article class="tile note-tile"><div class="note-symbol">✷</div><p>Friends don't let friends do mental math.</p><span>— THE PAmoja MANIFESTO</span></article>
+        </section>
+      </main>
+      <footer class="footer"><span>✳ pamoja. Built for the group chat.</span><span>DEMO EXPERIENCE · NO REAL PAYMENTS</span></footer>
+    </div>
+  </div>
+  <nav class="mobile-nav" aria-label="Mobile navigation"><button class="mobile-link is-active" data-view="dashboard">◫<span>Home</span></button><button class="mobile-link" data-view="feed">☷<span>Feed</span></button><button class="mobile-link" data-view="groups">♧<span>Squad</span></button><button class="mobile-link" data-view="insights">◉<span>Stats</span></button></nav>
+  <dialog id="expenseDialog" class="app-dialog" aria-labelledby="expenseDialogTitle"><form id="expenseForm" class="dialog-content"><div class="dialog-top"><div><p class="eyebrow">NEW MONEY MOMENT</p><h2 id="expenseDialogTitle">Drop a receipt ✳</h2></div><button type="button" class="icon-button" data-close-dialog aria-label="Close">✕</button></div><label class="field-label" for="expenseTitle">WHAT HAPPENED?</label><input id="expenseTitle" name="title" required maxlength="80" placeholder="e.g. Coffee for the crew"><label class="field-label" for="expenseAmount">HOW MUCH? (KES)</label><input id="expenseAmount" name="amount" type="number" min="0.01" step="0.01" required placeholder="2500"><label class="field-label" for="expenseCategory">CATEGORY</label><select id="expenseCategory" name="category"><option value="Food">🍔 Food & drinks</option><option value="Travel">🚕 Travel</option><option value="Stay">🏠 Stay</option><option value="Shopping">🛍️ Shopping</option><option value="Other">✨ Other</option></select><label class="field-label" for="expensePayer">PAID BY</label><select id="expensePayer" name="payer"><option value="Abby">You (Abby)</option><option value="Jules">Jules</option><option value="Sam">Sam</option><option value="Toni">Toni</option></select><label class="field-label" for="expenseMode">SPLIT STYLE</label><select id="expenseMode" name="mode"><option value="equal">Equally</option><option value="percent">By % (from Split Lab)</option><option value="leech">The Leech Ratio (from Split Lab)</option></select><p class="form-note">Demo only: expenses are shared equally or according to the Split Lab's current ratios. No money moves.</p><div class="dialog-actions"><button type="button" class="outlined-btn" data-close-dialog>Cancel</button><button class="primary-btn" type="submit">Add to the feed ↗</button></div></form></dialog>
+  <dialog id="budgetDialog" class="app-dialog" aria-labelledby="budgetDialogTitle"><form id="budgetForm" class="dialog-content"><div class="dialog-top"><h2 id="budgetDialogTitle">Set your vibe limit</h2><button type="button" class="icon-button" data-close-dialog aria-label="Close">✕</button></div><label class="field-label" for="budgetInput">MONTHLY DEMO BUDGET · KES</label><input id="budgetInput" type="number" min="1" step="1" required><div class="dialog-actions"><button type="button" class="outlined-btn" data-close-dialog>Cancel</button><button type="submit" class="primary-btn">Save budget ↗</button></div></form></dialog>
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+</body>
+</html>

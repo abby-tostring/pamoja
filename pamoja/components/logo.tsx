@@ -1,0 +1,2 @@
+import Link from 'next/link';
+export default function Logo({light=false}:{light?:boolean}){return <Link href="/" className="inline-flex items-center gap-2 text-2xl font-black tracking-tight"><span className="flex h-10 w-10 items-center justify-center rounded-2xl bg-pine text-xl text-white">p.</span><span className={light?'text-white':'text-ink'}>pamoja<span className="text-emerald-500">.</span></span></Link>}
